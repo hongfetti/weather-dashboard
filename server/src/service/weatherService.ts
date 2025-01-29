@@ -6,27 +6,92 @@ interface Coordinates {
  latitude: number,
  longitude: number,
 }
+
 // TODO: Define a class for the Weather object
-
-
-// TODO: Complete the WeatherService class
-class WeatherService implements Coordinates {
-  name: string;
-  latitude: number;
-  longitude: number;
+class Weather {
+  city: string;
+  date: string;
+  icon: string;
+  iconDescription: string;
+  tempF: number;
+  windSpeed: number;
+  humidity: number;
 
   constructor (
-    name: string,
-    latitude: number,
-    longitude: number,
-  )
+    city: string,
+    date: string,
+    icon: string,
+    iconDescription: string,
+    tempF: number,
+    windSpeed: number,
+    humidity: number,
+  ) {
+    this.city = city;
+    this.date = date;
+    this.icon = icon;
+    this.iconDescription = iconDescription;
+    this.tempF = tempF;
+    this.windSpeed = windSpeed;
+    this.humidity = humidity;
+  }
+}
+
+// TODO: Complete the WeatherService class
+ // TODO: Define the baseURL, API key, and city name properties
+class WeatherService {
+  baseURL: string;
+  apiKey: string;
+
+  constructor (
+    baseURL: string,
+    apiKey: string,
+
+  ) {
+
+    this.baseURL = baseURL;
+    this.apiKey= apiKey
 
   }
-  // TODO: Define the baseURL, API key, and city name properties
+  
+ 
   // TODO: Create fetchLocationData method
-  // private async fetchLocationData(query: string) {}
+  private async fetchLocationData(city: string) {
+    try {
+      const response = await fetch(
+        `${this.baseURL}/data/2.5/weather?q=${city}&appid=${this.apiKey}`
+      )
+      
+      const location = await response.json();
+
+      const locationData: Coordinates = {
+        latitude: location.latitude,
+        longitude: location.longitude
+      }
+      return locationData
+
+    } catch (err) {
+      console.log('Error', err)
+      return err;
+    }
+  }
+
+  private async fetchWeatherData(coordinates: Coordinates) {
+  try {
+    const response = await fetch(
+      `${this.baseURL}/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${this.apiKey}`
+    )
+  } catch (err) {
+    console.log('Error', err)
+      return err;
+    }
+  }
   // TODO: Create destructureLocationData method
-  // private destructureLocationData(locationData: Coordinates): Coordinates {}
+  // private destructureLocationData(locationData: Coordinates): Coordinates {
+  //   const destructuredLocation: Coordinates = {
+  //     latitude: , 
+  //     longitude: 
+  //   }
+  // }
   // TODO: Create buildGeocodeQuery method
   // private buildGeocodeQuery(): string {}
   // TODO: Create buildWeatherQuery method
@@ -40,15 +105,15 @@ class WeatherService implements Coordinates {
   // TODO: Complete buildForecastArray method
   // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {}
   // TODO: Complete getWeatherForCity method
-  const getWeatherForCity = async (city: string) => {
-  console.log(city)
+  // const getWeatherForCity = async (city: string) => {
+  // console.log(city)
 
-  const response = await fetch(`${this.baseURL}/data/2.5/weather?q=${city}&appid=${this.apiKey}`)
+  // const response = await fetch(`${this.baseURL}/data/2.5/weather?q=${city}&appid=${this.apiKey}`)
 
- const todayForecast = await response.json()
-  }
+  // const todayForecast = await response.json()
   
+}
 // 5-day forecast:
-//  const response2 = await fetch(`${this.baseURL}/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}`)
+//  const response2 = await fetch()
 
 export default new WeatherService();
