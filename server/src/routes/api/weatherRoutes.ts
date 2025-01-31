@@ -10,15 +10,19 @@ router.post('/', (req: Request, res: Response) => {
     try {
     // TODO: GET weather data from city name
       const cityName = req.body.cityName;
-  
+      if (!cityName){
+        return res.status(400).json({error: "City name is required."});
+      }
       WeatherService.getWeatherForCity(cityName).then((data) => {
         // TODO: save city to search history
         // HistoryService.addCity(cityName);
   
         res.json(data);
       });
+      return
     } catch (error) {
-      res.status(500).json(error);
+      res.status(500).json({error: "Failed to fetch weather data."});
+      return
     }
   });
   

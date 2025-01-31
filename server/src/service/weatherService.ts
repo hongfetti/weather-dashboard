@@ -2,14 +2,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-// TODO: Define an interface for the Coordinates object
-interface Coordinates {
-  name: string;
-  lat: number;
-  lon: number;
-  country: string;
-}
-
 // TODO: Define a class for the Weather object
 class Weather {
   city: string;
@@ -43,7 +35,6 @@ class Weather {
 class WeatherService {
   private baseURL?: string;
   private apiKey?: string;
-  // private city = '';
 
   constructor() {
 
@@ -65,15 +56,7 @@ class WeatherService {
         `${this.baseURL}/data/2.5/weather?q=${city}&appid=${this.apiKey}`
       )
       const location = await response.json();
-      console.log(location)
-
-      const locationData: Coordinates = {
-        lat: location.coord.lat,
-        lon: location.coord.lon,
-        name: location.name,
-        country: location.sys.country,
-      }
-      return locationData
+      return location
 
     } catch (err) {
       console.log('Error', err)
@@ -81,58 +64,40 @@ class WeatherService {
     }
   }
 
-  // private async fetchWeatherData(location: Coordinates) {
-  // try {
-  //   const response = await fetch(
-  //     `${this.baseURL}/data/2.5/forecast?lat=${response.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`
-  //   )
-  // } catch (err) {
-  //   console.log('Error', err)
-  //     return err;
-  //   }
-  // }
-  // TODO: Create destructureLocationData method
-  // private destructureLocationData(locationData: Coordinates): Coordinates {
-  //   if (!locationData) {
-  //     throw new Error("City not found");
-  //   }
-  //   return { lat: locationData.lat, lon: locationData.lon, name: locationData.name, country: locationData.country }
-  // }
-  // TODO: Create buildGeocodeQuery method
-  // private buildGeocodeQuery(): string {}
-  // TODO: Create buildWeatherQuery method
-  // private buildWeatherQuery(coordinates: Coordinates): string {}
-  // TODO: Create fetchAndDestructureLocationData method
-  // private async fetchAndDestructureLocationData() {}
-  // TODO: Create fetchWeatherData method
-  // private async fetchWeatherData(coordinates: Coordinates) {}
-  // TODO: Build parseCurrentWeather method
-  // private parseCurrentWeather(response: any) {}
-  // TODO: Complete buildForecastArray method
-  // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {}
-  // TODO: Complete getWeatherForCity method
   getWeatherForCity = async (city: string) => {
 
-    const location: Coordinates = await this.fetchLocationData(city) as Coordinates
-    // console.log(location)
+    const newWeatherData = await this.fetchLocationData(city)
 
-
+    const currentWeather = new Weather(
+      newWeatherData.name, 
+      newWeatherData.dt, 
+      // convert temp from kelvin to F
+      Number(((newWeatherData.main.temp - 273.15) * 9/5 + 32).toFixed(1)), 
+      newWeatherData.wind.speed, 
+      newWeatherData.main.humidity, 
+      newWeatherData.weather[0].icon, 
+      newWeatherData.weather[0].description)
 
     const weatherInfo = await fetch(
-      `${this.baseURL}/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${this.apiKey}`
+      `${this.baseURL}/data/2.5/forecast?q=${city}&appid=${this.apiKey}`
     )
     const info = await weatherInfo.json();
 
+    let filteredArray = info.list.filter((_: Weather, index: number) => index % 8 === 0)
+    let forecastArray = filteredArray.map((day: any) => new Weather(
+      info.city.name, 
+      day.dt,
+      // convert temp from kelvin to F
+      Number(((day.main.temp - 273.15) * 9/5 + 32).toFixed(1)),
+      day.wind.speed,
+      day.main.humidity, 
+      day.weather[0].icon, 
+      day.weather[0].description
+    ));
+    console.log(filteredArray)
 
-    const currentWeather = new Weather(info.name, info.date, info.tempF, info.windSpeed, info.humidity, info.icon, info.iconDescription)
-    console.log(currentWeather)
-
-    // console.log(info)
-    // return [currentWeather, ...forecastArray]
+    return [currentWeather, ...forecastArray]
   }
 }
-
-// 5-day forecast:
-//  const response2 = await fetch()
 
 export default new WeatherService();
