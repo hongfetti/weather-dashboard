@@ -15,7 +15,7 @@ router.post('/', (req: Request, res: Response) => {
       }
       WeatherService.getWeatherForCity(cityName).then((data) => {
         // TODO: save city to search history
-        // HistoryService.addCity(cityName);
+        HistoryService.addCity(cityName);
   
         res.json(data);
       });
