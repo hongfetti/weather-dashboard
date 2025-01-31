@@ -11,41 +11,41 @@ interface Coordinates {
 }
 
 // TODO: Define a class for the Weather object
-// class Weather {
-//   city: string;
-//   date: Dayjs | string;
-//   tempF: number;
-//   windSpeed: number;
-//   humidity: number;
-//   icon: string;
-//   iconDescription: string;
-//   constructor(
-//     city: string,
-//     date: Dayjs | string,
-//     tempF: number,
-//     windSpeed: number,
-//     humidity: number,
-//     icon: string,
-//     iconDescription: string
-//   ) {
-//     this.city = city;
-//     this.date = date;
-//     this.tempF = tempF;
-//     this.windSpeed = windSpeed;
-//     this.humidity = humidity;
-//     this.icon = icon;
-//     this.iconDescription = iconDescription;
-//   }
-// }
+class Weather {
+  city: string;
+  date: /*Dayjs*/ | string;
+  tempF: number;
+  windSpeed: number;
+  humidity: number;
+  icon: string;
+  iconDescription: string;
+  constructor(
+    city: string,
+    date: /*Dayjs*/ | string,
+    tempF: number,
+    windSpeed: number,
+    humidity: number,
+    icon: string,
+    iconDescription: string
+  ) {
+    this.city = city;
+    this.date = date;
+    this.tempF = tempF;
+    this.windSpeed = windSpeed;
+    this.humidity = humidity;
+    this.icon = icon;
+    this.iconDescription = iconDescription;
+  }
+}
 
 // TODO: Complete the WeatherService class
- // TODO: Define the baseURL, API key, and city name properties
+// TODO: Define the baseURL, API key, and city name properties
 class WeatherService {
   private baseURL?: string;
   private apiKey?: string;
   // private city = '';
 
-  constructor () {
+  constructor() {
 
     this.baseURL = process.env.API_BASE_URL || '';
     this.apiKey = process.env.API_KEY || '';
@@ -54,18 +54,18 @@ class WeatherService {
   // * Note: The following methods are here as a guide, but you are welcome to provide your own solution.
   // * Just keep in mind the getWeatherForCity method is being called in your
   // * 09-Servers-and-APIs/02-Challenge/Develop/server/src/routes/api/weatherRoutes.ts file
-  
+
   // * the array of Weather objects you are returning ultimately goes to
   // * 09-Servers-and-APIs/02-Challenge/Develop/client/src/main.ts
- 
+
   // TODO: Create fetchLocationData method
- private async fetchLocationData(city: string) {
+  private async fetchLocationData(city: string) {
     try {
       const response = await fetch(
         `${this.baseURL}/data/2.5/weather?q=${city}&appid=${this.apiKey}`
       )
-      
       const location = await response.json();
+      console.log(location)
 
       const locationData: Coordinates = {
         lat: location.coord.lat,
@@ -93,10 +93,10 @@ class WeatherService {
   // }
   // TODO: Create destructureLocationData method
   // private destructureLocationData(locationData: Coordinates): Coordinates {
-  //   const destructuredLocation: Coordinates = {
-  //     latitude: , 
-  //     longitude: 
+  //   if (!locationData) {
+  //     throw new Error("City not found");
   //   }
+  //   return { lat: locationData.lat, lon: locationData.lon, name: locationData.name, country: locationData.country }
   // }
   // TODO: Create buildGeocodeQuery method
   // private buildGeocodeQuery(): string {}
@@ -114,11 +114,21 @@ class WeatherService {
   getWeatherForCity = async (city: string) => {
 
     const location: Coordinates = await this.fetchLocationData(city) as Coordinates
- 
-    const coordinateData = await fetch(
-          `${this.baseURL}/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${this.apiKey}`
+    // console.log(location)
+
+
+
+    const weatherInfo = await fetch(
+      `${this.baseURL}/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${this.apiKey}`
     )
-    return coordinateData
+    const info = await weatherInfo.json();
+
+
+    const currentWeather = new Weather(info.name, info.date, info.tempF, info.windSpeed, info.humidity, info.icon, info.iconDescription)
+    console.log(currentWeather)
+
+    // console.log(info)
+    // return [currentWeather, ...forecastArray]
   }
 }
 
